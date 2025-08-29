@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест на сильные и слабые стороны личности</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .option:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .progress-container {
+            margin: 20px 0;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .results {
+            display: none;
+            text-align: center;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .strength-card, .weakness-card {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .weakness-card {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .card-content {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #34495e;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            margin-top: 20px;
+        }
+
+        .question-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Тест на сильные и слабые стороны</h1>
+            <p>Узнайте больше о своих личностных качествах</p>
+        </div>
+
+        <div class="content">
+            <div id="quiz-container">
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                
+                <div id="question-area"></div>
+                
+                <div class="navigation">
+                    <button class="btn" id="prev-btn" onclick="previousQuestion()" disabled>← Назад</button>
+                    <button class="btn" id="next-btn" onclick="nextQuestion()" disabled>Далее →</button>
+                </div>
+            </div>
+
+            <div id="results" class="results">
+                <h2>📊 Результаты теста</h2>
+                <div id="results-content"></div>
+                <button class="btn restart-btn" onclick="restartTest()">🔄 Пройти заново</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Как вы обычно реагируете на стрессовые ситуации?",
+                options: [
+                    "Сохраняю спокойствие и ищу решение",
+                    "Волнуюсь, но стараюсь действовать",
+                    "Паникую и теряюсь",
+                    "Избегаю ситуации или откладываю решение"
+                ],
+                strengths: ["устойчивость", "адаптивность", "эмоциональность", "осторожность"],
+                weaknesses: ["", "", "импульсивность", "прокрастинация"]
+            },
+            {
+                question: "Что лучше всего описывает ваш стиль общения?",
+                options: [
+                    "Прямой и честный, говорю то, что думаю",
+                    "Дипломатичный, стараюсь не задеть чувства",
+                    "Активный слушатель, больше слушаю, чем говорю",
+                    "Избегаю сложных разговоров"
+                ],
+                strengths: ["честность", "дипломатичность", "эмпатия", "миролюбие"],
+                weaknesses: ["резкость", "", "", "избегание конфликтов"]
+            },
+            {
+                question: "Как вы подходите к новым проектам или задачам?",
+                options: [
+                    "Сразу берусь за дело с энтузиазмом",
+                    "Тщательно планирую каждый шаг",
+                    "Жду дополнительных инструкций",
+                    "Откладываю начало, пока не появится вдохновение"
+                ],
+                strengths: ["инициативность", "организованность", "послушность", "креативность"],
+                weaknesses: ["импульсивность", "перфекционизм", "зависимость", "прокрастинация"]
+            },
+            {
+                question: "В командной работе вы обычно:",
+                options: [
+                    "Беру на себя роль лидера",
+                    "Вношу идеи и предложения",
+                    "Выполняю порученные задачи качественно",
+                    "Предпочитаю работать индивидуально"
+                ],
+                strengths: ["лидерство", "креативность", "исполнительность", "самостоятельность"],
+                weaknesses: ["доминирование", "", "", "изолированность"]
+            },
+            {
+                question: "Как вы относитесь к критике?",
+                options: [
+                    "Воспринимаю как возможность для роста",
+                    "Выслушиваю, но не всегда соглашаюсь",
+                    "Расстраиваюсь, но стараюсь извлечь урок",
+                    "Болезненно переживаю любую критику"
+                ],
+                strengths: ["обучаемость", "критическое мышление", "стрессоустойчивость", "чувствительность"],
+                weaknesses: ["", "упрямство", "тревожность", "ранимость"]
+            },
+            {
+                question: "Ваше отношение к дедлайнам:",
+                options: [
+                    "Всегда выполняю работу заранее",
+                    "Укладываюсь точно в срок",
+                    "Иногда опаздываю, но качество не страдает",
+                    "Часто работаю в последний момент"
+                ],
+                strengths: ["пунктуальность", "надежность", "качество работы", "работа под давлением"],
+                weaknesses: ["", "", "непунктуальность", "прокрастинация"]
+            },
+            {
+                question: "В сложной ситуации вы:",
+                options: [
+                    "Анализирую все варианты решения",
+                    "Полагаюсь на интуицию",
+                    "Обращаюсь за советом к другим",
+                    "Жду, что ситуация разрешится сама"
+                ],
+                strengths: ["аналитическое мышление", "интуиция", "коммуникабельность", "терпение"],
+                weaknesses: ["медлительность", "импульсивность", "зависимость", "пассивность"]
+            },
+            {
+                question: "Что мотивирует вас больше всего?",
+                options: [
+                    "Достижение поставленных целей",
+                    "Признание и похвала окружающих",
+                    "Возможность помочь другим",
+                    "Личный интерес и удовольствие от процесса"
+                ],
+                strengths: ["целеустремленность", "амбициозность", "альтруизм", "страсть к делу"],
+                weaknesses: ["", "зависимость от одобрения", "самопожертвование", "непостоянство"]
+            },
+            {
+                question: "Как вы ведете себя в незнакомой компании?",
+                options: [
+                    "Легко знакомлюсь и завожу разговоры",
+                    "Наблюдаю, прежде чем включиться в общение",
+                    "Стараюсь найти единомышленников",
+                    "Чувствую себя некомфортно и стремлюсь уйти"
+                ],
+                strengths: ["коммуникабельность", "наблюдательность", "избирательность", "осторожность"],
+                weaknesses: ["", "", "", "социальная тревожность"]
+            },
+            {
+                question: "Ваш подход к изучению нового:",
+                options: [
+                    "Изучаю систематически, от простого к сложному",
+                    "Погружаюсь полностью, изучаю все сразу",
+                    "Изучаю только то, что необходимо для задач",
+                    "Быстро теряю интерес к новому материалу"
+                ],
+                strengths: ["методичность", "энтузиазм", "практичность", "избирательность"],
+                weaknesses: ["", "поверхностность", "узкий кругозор", "непостоянство"]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = [];
+        let strengthsCount = {};
+        let weaknessesCount = {};
+
+        function initializeTest() {
+            showQuestion();
+            updateProgress();
+        }
+
+        function showQuestion() {
+            const questionArea = document.getElementById('question-area');
+            const question = questions[currentQuestion];
+            
+            questionArea.innerHTML = `
+                <div class="question-container">
+                    <div class="question-number">Вопрос ${currentQuestion + 1} из ${questions.length}</div>
+                    <div class="question">${question.question}</div>
+                    <div class="options">
+                        ${question.options.map((option, index) => 
+                            `<div class="option" onclick="selectOption(${index})" data-index="${index}">
+                                ${option}
+                            </div>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Восстановить выбранный ответ
+            if (answers[currentQuestion] !== undefined) {
+                const selected = questionArea.querySelector(`[data-index="${answers[currentQuestion]}"]`);
+                if (selected) selected.classList.add('selected');
+            }
+
+            updateButtons();
+        }
+
+        function selectOption(optionIndex) {
+            // Убрать предыдущий выбор
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            
+            // Выбрать текущий вариант
+            document.querySelector(`[data-index="${optionIndex}"]`).classList.add('selected');
+            
+            answers[currentQuestion] = optionIndex;
+            updateButtons();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion();
+                updateProgress();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+                updateProgress();
+            }
+        }
+
+        function updateButtons() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.disabled = answers[currentQuestion] === undefined;
+            
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.textContent = 'Показать результаты 📊';
+            } else {
+                nextBtn.textContent = 'Далее →';
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+        }
+
+        function showResults() {
+            // Подсчет результатов
+            answers.forEach((answer, questionIndex) => {
+                const question = questions[questionIndex];
+                const strength = question.strengths[answer];
+                const weakness = question.weaknesses[answer];
+                
+                if (strength && strength !== '') {
+                    strengthsCount[strength] = (strengthsCount[strength] || 0) + 1;
+                }
+                
+                if (weakness && weakness !== '') {
+                    weaknessesCount[weakness] = (weaknessesCount[weakness] || 0) + 1;
+                }
+            });
+
+            // Определение топ сильных и слабых сторон
+            const topStrengths = Object.entries(strengthsCount)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 3)
+                .map(([name]) => name);
+
+            const topWeaknesses = Object.entries(weaknessesCount)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 3)
+                .map(([name]) => name);
+
+            const strengthDescriptions = {
+                'устойчивость': 'Вы умеете сохранять спокойствие в стрессовых ситуациях и находить выход из сложных обстоятельств.',
+                'адаптивность': 'Вы легко приспосабливаетесь к изменениям и новым условиям.',
+                'эмоциональность': 'Вы чувствительны к эмоциям и переживаниям, что помогает в понимании других людей.',
+                'честность': 'Вы цените правду и открытость в общении.',
+                'дипломатичность': 'Вы умеете находить компромиссы и решать конфликты мирным путем.',
+                'эмпатия': 'Вы хорошо понимаете чувства и потребности других людей.',
+                'инициативность': 'Вы активно берете на себя ответственность и не боитесь действовать.',
+                'организованность': 'Вы умеете планировать и структурировать свою деятельность.',
+                'креативность': 'Вы способны генерировать новые идеи и нестандартные решения.',
+                'лидерство': 'Вы естественно берете на себя руководящую роль и вдохновляете других.',
+                'обучаемость': 'Вы открыты к новым знаниям и легко усваиваете информацию.',
+                'пунктуальность': 'Вы ответственно относитесь к срокам и обязательствам.',
+                'целеустремленность': 'Вы настойчиво идете к своим целям.',
+                'коммуникабельность': 'Вы легко находите общий язык с разными людьми.'
+            };
+
+            const weaknessDescriptions = {
+                'импульсивность': 'Иногда вы принимаете решения слишком быстро, не обдумав последствия.',
+                'прокрастинация': 'Вы склонны откладывать важные дела на потом.',
+                'резкость': 'Ваша прямолинейность может задевать чувства других людей.',
+                'перфекционизм': 'Стремление к идеалу иногда мешает завершать проекты вовремя.',
+                'зависимость': 'Вы часто полагаетесь на мнение и поддержку других.',
+                'тревожность': 'Вы склонны переживать и волноваться по различным поводам.',
+                'ранимость': 'Критика и негативные комментарии сильно влияют на ваше состояние.',
+                'непунктуальность': 'Вам сложно укладываться в установленные сроки.',
+                'социальная тревожность': 'Вы чувствуете дискомфорт в новых социальных ситуациях.'
+            };
+
+            let resultsHTML = '';
+
+            if (topStrengths.length > 0) {
+                resultsHTML += '<div class="strength-card"><div class="card-title">🌟 Ваши сильные стороны:</div><div class="card-content">';
+                topStrengths.forEach(strength => {
+                    resultsHTML += `<strong>${strength.charAt(0).toUpperCase() + strength.slice(1)}:</strong> ${strengthDescriptions[strength] || 'Важное качество вашей личности.'}<br><br>`;
+                });
+                resultsHTML += '</div></div>';
+            }
+
+            if (topWeaknesses.length > 0) {
+                resultsHTML += '<div class="weakness-card"><div class="card-title">🎯 Области для развития:</div><div class="card-content">';
+                topWeaknesses.forEach(weakness => {
+                    resultsHTML += `<strong>${weakness.charAt(0).toUpperCase() + weakness.slice(1)}:</strong> ${weaknessDescriptions[weakness] || 'Область, над которой стоит поработать.'}<br><br>`;
+                });
+                resultsHTML += '</div></div>';
+            }
+
+            resultsHTML += `
+                <div class="strength-card">
+                    <div class="card-title">💡 Рекомендации:</div>
+                    <div class="card-content">
+                        Используйте свои сильные стороны для достижения целей и работайте над развитием слабых сторон. 
+                        Помните, что осознание своих особенностей - это первый шаг к личностному росту!
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('results-content').innerHTML = resultsHTML;
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('results').classList.add('show');
+        }
+
+        function restartTest() {
+            currentQuestion = 0;
+            answers = [];
+            strengthsCount = {};
+            weaknessesCount = {};
+            
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('results').classList.remove('show');
+            
+            initializeTest();
+        }
+
+        // Инициализация теста при загрузке страницы
+        window.onload = initializeTest;
+    </script>
+</body>
+</html> 
+"Добавлен тест на личность"
